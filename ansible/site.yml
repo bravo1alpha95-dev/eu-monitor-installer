@@ -1,0 +1,15 @@
+---
+# Install the EmpowerU community monitoring toolkit.
+# Dry-run (recommended first run):
+#   ansible-playbook site.yml --check
+# Apply (requires an authorized ROE and explicit confirm):
+#   ansible-playbook site.yml -e eu_monitor_confirm=yes -e eu_monitor_roe_path=/path/to/roe.md
+#
+# This playbook does not install Wazuh packages, open ports, or enable timers.
+
+- name: Install EmpowerU community monitoring toolkit
+  hosts: eu_monitor
+  gather_facts: true
+  become: false
+  roles:
+    - role: eu_monitor

@@ -1,0 +1,11 @@
+# Example systemd timer. Review before installing. Not enabled by the installer.
+[Unit]
+Description=Daily EmpowerU EC Detect read-only collection
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=15m
+
+[Install]
+WantedBy=timers.target

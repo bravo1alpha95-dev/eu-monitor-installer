@@ -1,0 +1,12 @@
+# Source snapshots vendored into eu-monitor-installer.
+# The trees under vendor/ match these first commits of the companion
+# repositories (fresh history, no private-repo commits).
+
+community_tree=eu-ec-detect-community
+community_origin=https://github.com/bravo1alpha95-dev/eu-ec-detect-community
+community_commit=dba5dc7eacf0fdc0bc0809f80cf40330c21f7dae
+wazuh_tree=eu-wazuh-detections
+wazuh_origin=https://github.com/bravo1alpha95-dev/eu-wazuh-detections
+wazuh_commit=1460a3bd95ab53f9038a8ca482d7f529cadbac56
+snapshotted_at=2026-11-12
+# The 10.0.0.0/24 addresses in vendored examples are placeholders.

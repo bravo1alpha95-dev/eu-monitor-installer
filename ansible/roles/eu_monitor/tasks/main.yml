@@ -1,0 +1,158 @@
+---
+- name: Refuse mutations unless this is a check run or eu_monitor_confirm is true
+  ansible.builtin.assert:
+    that:
+      - ansible_check_mode or (eu_monitor_confirm | bool)
+    fail_msg: >-
+      Refusing to mutate. Re-run with --check (dry-run) or
+      -e eu_monitor_confirm=yes after the ROE is AUTHORIZED.
+    success_msg: "Install gate: check_mode={{ ansible_check_mode }} eu_monitor_confirm={{ eu_monitor_confirm }}"
+
+- name: Confirm the ROE is authorized before a real apply
+  when: not ansible_check_mode
+  ansible.builtin.command:
+    argv:
+      - bash
+      - -c
+      - |
+        set -euo pipefail
+        source "{{ eu_monitor_community_src }}/scripts/lib.sh"
+        roe_authorized "{{ eu_monitor_roe_path }}"
+  args:
+    chdir: "{{ eu_monitor_community_src }}"
+  delegate_to: localhost
+  become: false
+  changed_when: false
+
+- name: Create the install prefix
+  ansible.builtin.file:
+    path: "{{ eu_monitor_prefix }}"
+    state: directory
+    owner: "{{ eu_monitor_owner }}"
+    group: "{{ eu_monitor_group }}"
+    mode: "0750"
+
+- name: Create the reports directory
+  ansible.builtin.file:
+    path: "{{ eu_monitor_prefix }}/reports"
+    state: directory
+    owner: "{{ eu_monitor_owner }}"
+    group: "{{ eu_monitor_group }}"
+    mode: "0700"
+
+- name: Create toolkit subdirectories
+  ansible.builtin.file:
+    path: "{{ eu_monitor_prefix }}/{{ item }}"
+    state: directory
+    owner: "{{ eu_monitor_owner }}"
+    group: "{{ eu_monitor_group }}"
+    mode: "0755"
+  loop:
+    - scripts
+    - tests
+    - scope
+    - policies
+    - docs
+    - systemd
+
+- name: Copy community directories
+  ansible.builtin.copy:
+    src: "{{ eu_monitor_community_src }}/{{ item }}/"
+    dest: "{{ eu_monitor_prefix }}/{{ item }}/"
+    owner: "{{ eu_monitor_owner }}"
+    group: "{{ eu_monitor_group }}"
+    mode: preserve
+    directory_mode: "0755"
+  loop:
+    - scripts
+    - tests
+    - policies
+    - docs
+
+- name: Copy top-level documentation and license files
+  ansible.builtin.copy:
+    src: "{{ eu_monitor_community_src }}/{{ item }}"
+    dest: "{{ eu_monitor_prefix }}/{{ item }}"
+    owner: "{{ eu_monitor_owner }}"
+    group: "{{ eu_monitor_group }}"
+    mode: "0644"
+  loop:
+    - .env.example
+    - .gitignore
+    - README.md
+    - EASY-STEPS.md
+    - SECURITY.md
+    - LICENSE
+    - NOTICE
+    - CONTRIBUTING.md
+    - CODE_OF_CONDUCT.md
+
+- name: Copy scope templates only when the destination file is missing
+  ansible.builtin.copy:
+    src: "{{ eu_monitor_community_src }}/scope/{{ item }}"
+    dest: "{{ eu_monitor_prefix }}/scope/{{ item }}"
+    owner: "{{ eu_monitor_owner }}"
+    group: "{{ eu_monitor_group }}"
+    mode: "0644"
+    force: false
+  loop:
+    - roe.md
+    - inventory.md
+
+# In --check the copy task does not materialize files, so chmod would fail
+# on a missing path. Mode is already preserved from the vendored sources.
+- name: Ensure script entrypoints are executable
+  when: not ansible_check_mode
+  ansible.builtin.file:
+    path: "{{ eu_monitor_prefix }}/scripts/{{ item }}"
+    mode: "0755"
+  loop:
+    - 00_preflight.sh
+    - 10_collect.sh
+    - 20_apply.sh
+    - anomaly-checks.sh
+    - easy-run.sh
+    - lib.sh
+
+- name: Copy example systemd units into the prefix (not enabled)
+  ansible.builtin.copy:
+    src: "{{ eu_monitor_systemd_src }}/"
+    dest: "{{ eu_monitor_prefix }}/systemd/"
+    owner: "{{ eu_monitor_owner }}"
+    group: "{{ eu_monitor_group }}"
+    mode: "0644"
+    directory_mode: "0755"
+
+- name: Copy Wazuh custom rules when requested
+  when: eu_monitor_with_wazuh_rules | bool
+  block:
+    - name: Ensure the Wazuh rules directory exists
+      ansible.builtin.file:
+        path: "{{ eu_monitor_wazuh_rules_dir }}"
+        state: directory
+        mode: "0750"
+
+    - name: Install the custom rules file
+      ansible.builtin.copy:
+        src: "{{ eu_monitor_wazuh_src }}/rules/eu_ec_detect_rules.xml"
+        dest: "{{ eu_monitor_wazuh_rules_dir }}/eu_ec_detect_rules.xml"
+        mode: "0640"
+
+    - name: Check whether the optional decoders directory already exists
+      ansible.builtin.stat:
+        path: "{{ eu_monitor_wazuh_decoders_dir }}"
+      register: eu_monitor_decoder_dir
+
+    - name: Install the optional decoder when the directory already exists
+      when: eu_monitor_decoder_dir.stat.isdir | default(false)
+      ansible.builtin.copy:
+        src: "{{ eu_monitor_wazuh_src }}/decoders/eu_ec_detect_decoders.xml"
+        dest: "{{ eu_monitor_wazuh_decoders_dir }}/eu_ec_detect_decoders.xml"
+        mode: "0640"
+
+- name: Remind the operator that packages and timers were not touched
+  ansible.builtin.debug:
+    msg:
+      - "Installed (or would install) the community toolkit at {{ eu_monitor_prefix }}."
+      - "Wazuh packages, manager restarts, and systemd timers were not changed."
+      - "Validate Wazuh rules with wazuh-logtest before any manager reload; they are untested on a live manager."

@@ -1,0 +1,17 @@
+.env
+.env.*
+*.env
+!.env.example
+reports/
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.retry
+.idea/
+.DS_Store
+# ansible inventory with real hosts must not be committed
+ansible/inventory/hosts.yml
+ansible/inventory/hosts
+!ansible/inventory/hosts.example.yml
+!ansible/inventory/localhost.yml

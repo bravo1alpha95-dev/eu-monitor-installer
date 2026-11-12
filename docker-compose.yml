@@ -1,0 +1,32 @@
+# Starter Compose file. Collection runs in the container, write-only to the
+# reports volume. This does not monitor the host unless you add bind mounts
+# after review. Dry-run / read-only: CONFIRM is never set here.
+#
+#   docker compose build
+#   docker compose run --rm eu-collect
+
+services:
+  eu-collect:
+    build: .
+    image: eu-ec-detect-community:local
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:mode=1777,uid=10001,gid=10001
+    volumes:
+      - eu_reports:/opt/eu-ec-detect/reports
+    # Optional, only after review, to give the collector a read-only view of
+    # host logs (paths inside the container would still need to match what
+    # the scripts look for, which is /var/log/... — this is a reminder, not
+    # a ready-made host-monitor):
+    # - /var/log:/var/log:ro
+    environment:
+      # Do not set CONFIRM=yes here.
+      LANG: C
+    user: "10001:10001"
+
+volumes:
+  eu_reports:

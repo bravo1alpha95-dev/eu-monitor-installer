@@ -1,0 +1,24 @@
+---
+# Dry-run is the Ansible check mode (`--check`). Actual writes also require
+# eu_monitor_confirm=true AND an authorized ROE file.
+eu_monitor_confirm: false
+
+eu_monitor_prefix: /opt/eu-ec-detect
+eu_monitor_owner: "{{ ansible_user_id }}"
+eu_monitor_group: "{{ ansible_user_id }}"
+
+# Path on the controller to the vendored community tree.
+eu_monitor_community_src: "{{ playbook_dir }}/../vendor/eu-ec-detect-community"
+eu_monitor_wazuh_src: "{{ playbook_dir }}/../vendor/eu-wazuh-detections"
+eu_monitor_systemd_src: "{{ playbook_dir }}/../systemd"
+
+# ROE used for the mutation gate. Evaluated on the controller.
+eu_monitor_roe_path: "{{ playbook_dir }}/../vendor/eu-ec-detect-community/scope/roe.md"
+
+eu_monitor_with_wazuh_rules: false
+eu_monitor_wazuh_rules_dir: /var/ossec/etc/rules
+eu_monitor_wazuh_decoders_dir: /var/ossec/etc/decoders
+
+# Never install Wazuh packages or enable systemd timers from this role.
+eu_monitor_manage_packages: false
+eu_monitor_enable_timer: false

@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: shellcheck, ansible syntax, installer tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck and Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck python3-pip
+          pip3 install --user ansible ansible-lint
+
+      - name: ShellCheck install.sh
+        run: shellcheck -x install.sh
+
+      - name: Ansible syntax-check
+        working-directory: ansible
+        run: ansible-playbook site.yml --syntax-check
+
+      - name: ansible-lint
+        working-directory: ansible
+        run: ansible-lint site.yml roles/eu_monitor
+
+      - name: Installer regressions
+        run: python3 tests/test_install.py
+
+      - name: Vendored community regressions (syntax + suite)
+        working-directory: vendor/eu-ec-detect-community
+        run: |
+          for script in scripts/*.sh; do bash -n "$script"; done
+          shellcheck -x scripts/*.sh
+          python3 tests/test_regressions.py

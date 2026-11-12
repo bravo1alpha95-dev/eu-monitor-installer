@@ -1,0 +1,11 @@
+---
+# Local check-mode inventory. Used by CI and local --check runs.
+# Does not target a remote host.
+all:
+  children:
+    eu_monitor:
+      hosts:
+        local-check:
+          ansible_connection: local
+          ansible_host: 127.0.0.1
+          ansible_python_interpreter: "{{ ansible_playbook_python }}"

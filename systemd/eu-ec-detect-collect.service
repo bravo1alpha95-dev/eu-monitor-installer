@@ -1,0 +1,25 @@
+# Example systemd service. Review before installing.
+# This unit only runs the read-only easy path. It does not apply mutations.
+# Do not enable until you have filled .env and the ROE, and reviewed paths.
+[Unit]
+Description=EmpowerU EC Detect read-only access collection
+After=network-online.target
+# The toolkit itself does not require the network; this just orders startup.
+
+[Service]
+Type=oneshot
+# Replace User and WorkingDirectory after review.
+User=euoperator
+Group=euoperator
+WorkingDirectory=/opt/eu-ec-detect
+ExecStart=/opt/eu-ec-detect/scripts/easy-run.sh
+# Collection is read-only; do not set CONFIRM=yes here.
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/opt/eu-ec-detect/reports
+
+[Install]
+WantedBy=multi-user.target

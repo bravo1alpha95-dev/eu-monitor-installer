@@ -1,0 +1,21 @@
+---
+# Example inventory. Copy to hosts.yml (gitignored) and replace
+# placeholders with systems YOU OWN. The 10.0.0.10 address is a documentation
+# placeholder, not a real target.
+#
+#   cp inventory/hosts.example.yml inventory/hosts.yml
+#   ansible-playbook site.yml --check
+#
+# Do not commit inventory/hosts.yml if it contains real hostnames or addresses.
+
+all:
+  children:
+    eu_monitor:
+      hosts:
+        ops-01:
+          # Replace with your operator host.
+          ansible_host: 10.0.0.10
+          ansible_user: operator
+      vars:
+        eu_monitor_prefix: /opt/eu-ec-detect
+        eu_monitor_with_wazuh_rules: false

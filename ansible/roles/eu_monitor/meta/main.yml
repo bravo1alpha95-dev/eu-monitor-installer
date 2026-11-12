@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  role_name: eu_monitor
+  namespace: empoweru
+  author: EmpowerU LLC
+  description: >
+    Install the EmpowerU community access-monitoring scripts (and optionally
+    Wazuh custom rules) onto a host the operator owns. Dry-run with --check.
+    Does not install Wazuh packages.
+  license: Apache-2.0
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions: [all]
+    - name: Ubuntu
+      versions: [all]
+  galaxy_tags: [security, monitoring, wazuh]
+dependencies: []

@@ -1,0 +1,16 @@
+.git
+.venv
+venv
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+reports
+**/reports
+ansible/inventory/hosts
+*.md
+!vendor/**/*.md
+.github
+systemd
+ansible
+tests
