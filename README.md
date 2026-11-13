@@ -51,7 +51,7 @@ Copy `ansible/inventory/hosts.example.yml` to `ansible/inventory/hosts.yml` and 
 
 Existing `scope/roe.md` and `scope/inventory.md` at the destination are not overwritten (idempotent with operator data).
 
-The vendored Wazuh rules have **not** been tested with `wazuh-logtest` against a live manager. Validate them before any manager reload.
+The vendored Wazuh rules were verified with `wazuh-logtest` against `wazuh/wazuh-manager:4.14.10` in the companion [eu-wazuh-detections](https://github.com/bravo1alpha95-dev/eu-wazuh-detections) repository (see that repo's `docs/LOGTEST.md`). File-integrity rules 100020 and 100021 loaded but were not fired through logtest. Re-validate on your manager before any reload.
 
 ## Docker
 
@@ -62,7 +62,9 @@ docker compose build
 docker compose run --rm eu-collect
 ```
 
-Reports are written to a named volume. `CONFIRM` is never set in the Compose file. `docker build` was not run in the publishing environment (Docker was not available); the Dockerfile is written for Debian bookworm-slim with GNU sed.
+Reports are written to a named volume. `CONFIRM` is never set in the Compose file.
+
+**Verified 2026-11-13:** `docker compose build` produced `eu-ec-detect-community:local` from `debian:bookworm-slim`, and `docker compose run --rm eu-collect` completed the read-only easy path (exit 0). Preflight allowed collection (ROE is the DRAFT template). The reports volume held a text file and a JSON summary, directory mode 0700, file mode 0600, listening-socket addresses redacted. `CONFIRM` was not in the image environment. Docker Engine 29.9.3 was the official static x86_64 build (Debian apt mirrors were returning HTTP 500 in that environment, so packages were not used); Compose was v5.7.1. The daemon ran with `"iptables": false` because nftables/iptables were not installed on the host; container networking still worked. A `useradd` warning (`uid 10001` greater than `SYS_UID_MAX`) is cosmetic — the `euoperator` user was created and the container ran as 10001.
 
 ## After install
 
@@ -90,4 +92,4 @@ python3 tests/test_install.py
 
 Licensed under the [Apache License 2.0](LICENSE). Copyright 2026 EmpowerU LLC.
 
-Vulnerability reports: see [SECURITY.md](SECURITY.md) and `[CONTACT EMAIL]`.
+Vulnerability reports: see [SECURITY.md](SECURITY.md) and bravo1alpha95@gmail.com.
