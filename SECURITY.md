@@ -2,7 +2,7 @@
 
 ## Reporting vulnerabilities
 
-Please report security issues privately to **[CONTACT EMAIL]**. Do not open a public issue for a vulnerability, and do not attach production evidence, secrets, or personally identifiable information.
+Please report security issues privately to **bravo1alpha95@gmail.com**. Do not open a public issue for a vulnerability, and do not attach production evidence, secrets, or personally identifiable information.
 
 ## Design
 
@@ -18,4 +18,4 @@ Please report security issues privately to **[CONTACT EMAIL]**. Do not open a pu
 - A completed ROE is an authorization record, not proof that the host is in scope. Confirm `EU_SCOPE_CIDR` and the inventory yourself.
 - Ansible `become` is off by default. Escalating to write under `/opt` or `/var/ossec` is an operator decision.
 - Vendored snapshots can drift from the companion repositories. Check `vendor/SNAPSHOT.txt`.
-- The Wazuh rules this installer can copy are untested against a live manager.
+- The Wazuh rules this installer can copy were verified with wazuh-logtest against wazuh/wazuh-manager:4.14.10 in the companion detections repo. File-integrity rules were not fired through logtest. Re-validate on your manager.
