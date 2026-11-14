@@ -155,4 +155,4 @@
     msg:
       - "Installed (or would install) the community toolkit at {{ eu_monitor_prefix }}."
       - "Wazuh packages, manager restarts, and systemd timers were not changed."
-      - "Validate Wazuh rules with wazuh-logtest before any manager reload; they are untested on a live manager."
+      - "Validate Wazuh rules with wazuh-logtest before any manager reload; they were tested on Wazuh 4.14.10 only."
