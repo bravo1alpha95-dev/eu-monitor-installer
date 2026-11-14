@@ -1,15 +1,13 @@
 # Source snapshots vendored into eu-monitor-installer.
-# Updated 2026-11-13 to pick up the contact-email and wazuh-logtest
-# parent-SID fixes. These SHAs are on the companion PR branches, not
-# yet on those repositories' main branches.
+# Refreshed 2026-11-14 from both repositories' main branches.
 
 community_tree=eu-ec-detect-community
 community_origin=https://github.com/bravo1alpha95-dev/eu-ec-detect-community
-community_commit=051288a1e227ce3e0d2b1dabfb1463191bbb82e9
-community_branch=docs/contact-email
+community_commit=fbaf10abc819f7b70b496d552257916c94a48522
+community_branch=main
 wazuh_tree=eu-wazuh-detections
 wazuh_origin=https://github.com/bravo1alpha95-dev/eu-wazuh-detections
-wazuh_commit=3962f877d0573cfa78d4d083681c6bf0f5a5bd6f
-wazuh_branch=fix/logtest-verified-parents-and-contact
-snapshotted_at=2026-11-13
+wazuh_commit=be703d1c634234c521fd0f89b974b23bdce2f949
+wazuh_branch=main
+snapshotted_at=2026-11-14
 # The 10.0.0.0/24 addresses in vendored examples are placeholders.
