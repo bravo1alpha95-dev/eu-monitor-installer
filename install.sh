@@ -183,7 +183,7 @@ if [[ $WITH_WAZUH -eq 1 ]]; then
     echo "[install] Rules do not depend on the optional decoder."
   fi
   echo "[install] Wrote $WAZUH_RULES_DIR/eu_ec_detect_rules.xml"
-  echo "[install] Validate with wazuh-logtest on your manager before reload. This pack is untested against a live manager."
+  echo "[install] Validate with wazuh-logtest on your manager before reload. Rules were tested on Wazuh 4.14.10 only."
 fi
 
 echo "[install] Installed community toolkit at $PREFIX"
