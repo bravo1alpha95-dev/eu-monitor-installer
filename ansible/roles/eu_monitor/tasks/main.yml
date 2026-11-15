@@ -112,6 +112,7 @@
     - 20_apply.sh
     - anomaly-checks.sh
     - easy-run.sh
+    - hardening-audit.sh
     - lib.sh
 
 - name: Copy example systemd units into the prefix (not enabled)
@@ -155,4 +156,5 @@
     msg:
       - "Installed (or would install) the community toolkit at {{ eu_monitor_prefix }}."
       - "Wazuh packages, manager restarts, and systemd timers were not changed."
+      - "After install, scripts/hardening-audit.sh is a read-only CIS-style audit; it ignores CONFIRM and never mutates the host."
       - "Validate Wazuh rules with wazuh-logtest before any manager reload; they were tested on Wazuh 4.14.10 only."

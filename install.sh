@@ -10,6 +10,9 @@
 #   ./install.sh --wazuh-rules-dir DIR    # rules destination (default /var/ossec/etc/rules)
 #   ./install.sh --roe PATH               # ROE file used for the mutation gate
 #   CONFIRM=yes ./install.sh [options]    # actually write, requires authorized ROE
+#
+# After install, scripts/hardening-audit.sh is a read-only CIS-style audit.
+# It ignores CONFIRM and never mutates the host.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -26,7 +29,7 @@ if [[ "${CONFIRM:-}" == "yes" ]]; then
 fi
 
 usage() {
-  sed -n '2,14p' "$0" | sed 's/^# \?//'
+  sed -n '2,15p' "$0" | sed 's/^# \?//'
   exit 0
 }
 
@@ -152,7 +155,7 @@ chmod 750 "$PREFIX"
 copy_tree "$SRC_SCRIPTS" "$PREFIX"
 
 # Entrypoints must be executable after copy (some filesystems drop the bit).
-for s in 00_preflight.sh 10_collect.sh 20_apply.sh anomaly-checks.sh easy-run.sh; do
+for s in 00_preflight.sh 10_collect.sh 20_apply.sh anomaly-checks.sh easy-run.sh hardening-audit.sh; do
   chmod 755 "$PREFIX/scripts/$s"
 done
 chmod 755 "$PREFIX/scripts/lib.sh"
@@ -190,7 +193,8 @@ echo "[install] Installed community toolkit at $PREFIX"
 echo "[install] Next steps (manual):"
 echo "  1. cd $PREFIX && cp -n .env.example .env && chmod 600 .env"
 echo "  2. Edit .env (set EU_SCOPE_CIDR), scope/inventory.md, and scope/roe.md."
-echo "  3. Run $PREFIX/scripts/easy-run.sh (read-only)."
-echo "  4. Systemd units, if you use them, are examples in $PREFIX/systemd — review, then install and enable yourself."
-echo "  5. No packages were installed and no services were started."
+echo "  3. Run $PREFIX/scripts/easy-run.sh (read-only collection)."
+echo "  4. Optionally run $PREFIX/scripts/hardening-audit.sh (read-only CIS-style audit; ignores CONFIRM)."
+echo "  5. Systemd units, if you use them, are examples in $PREFIX/systemd — review, then install and enable yourself."
+echo "  6. No packages were installed and no services were started."
 exit 0
