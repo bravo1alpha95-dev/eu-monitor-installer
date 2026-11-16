@@ -14,10 +14,9 @@
     argv:
       - bash
       - -c
-      - |
-        set -euo pipefail
-        source "{{ eu_monitor_community_src }}/scripts/lib.sh"
-        roe_authorized "{{ eu_monitor_roe_path }}"
+      - 'set -euo pipefail; source scripts/lib.sh; roe_authorized "$1"'
+      - roe-gate
+      - "{{ eu_monitor_roe_path }}"
   args:
     chdir: "{{ eu_monitor_community_src }}"
   delegate_to: localhost

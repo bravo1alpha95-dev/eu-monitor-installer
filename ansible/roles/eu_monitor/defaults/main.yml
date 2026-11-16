@@ -18,7 +18,3 @@ eu_monitor_roe_path: "{{ playbook_dir }}/../vendor/eu-ec-detect-community/scope/
 eu_monitor_with_wazuh_rules: false
 eu_monitor_wazuh_rules_dir: /var/ossec/etc/rules
 eu_monitor_wazuh_decoders_dir: /var/ossec/etc/decoders
-
-# Never install Wazuh packages or enable systemd timers from this role.
-eu_monitor_manage_packages: false
-eu_monitor_enable_timer: false
