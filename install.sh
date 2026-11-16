@@ -69,6 +69,14 @@ case "$PREFIX" in
     exit 1
     ;;
 esac
+# Same rule for the rules destination: it decides where root writes rules and
+# (via its parent directory) decoders, so no option-like or '..' paths.
+case "$WAZUH_RULES_DIR" in
+  ''|-*|*..*)
+    echo "[install] ERROR: unsafe --wazuh-rules-dir" >&2
+    exit 1
+    ;;
+esac
 
 SRC_SCRIPTS="$ROOT/vendor/eu-ec-detect-community"
 SRC_RULES="$ROOT/vendor/eu-wazuh-detections"

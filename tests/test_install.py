@@ -71,6 +71,14 @@ class Installer(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
         self.assertIn("operator notes", filled.read_text())
 
+    def test_wazuh_rules_dir_traversal_is_refused(self):
+        self.roe.write_text(AUTHORIZED_ROE)
+        rules = Path(self.tmp.name) / "rules" / ".." / ".." / "escaped"
+        result = self.run_install("--with-wazuh-rules", "--wazuh-rules-dir", str(rules), confirm=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unsafe --wazuh-rules-dir", result.stderr)
+        self.assertFalse(self.prefix.exists())
+
     def test_wazuh_rules_optional_and_decoder_skipped_without_dir(self):
         self.roe.write_text(AUTHORIZED_ROE)
         rules = Path(self.tmp.name) / "rules"
