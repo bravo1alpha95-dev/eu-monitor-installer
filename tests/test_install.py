@@ -58,6 +58,10 @@ class Installer(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
         self.assertTrue((self.prefix / "scripts/easy-run.sh").is_file())
         self.assertTrue(os.access(self.prefix / "scripts/easy-run.sh", os.X_OK))
+        self.assertTrue((self.prefix / "scripts/hardening-audit.sh").is_file())
+        self.assertTrue(os.access(self.prefix / "scripts/hardening-audit.sh", os.X_OK))
+        self.assertTrue((self.prefix / "tests/test_hardening_audit.py").is_file())
+        self.assertTrue((self.prefix / "tests/fixtures/hardening/hardened/etc/ssh/sshd_config").is_file())
         self.assertEqual(stat.S_IMODE((self.prefix / "reports").stat().st_mode), 0o700)
         self.assertTrue((self.prefix / "systemd/eu-ec-detect-collect.service").is_file())
         # Second apply is idempotent and keeps a filled ROE.
@@ -85,11 +89,46 @@ class Installer(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(list(target.iterdir()), [])
 
+    def test_installed_hardening_audit_is_read_only_on_fixtures(self):
+        self.roe.write_text(AUTHORIZED_ROE)
+        result = self.run_install(confirm=True)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        fixture = self.prefix / "tests/fixtures/hardening/hardened"
+        before = {path: path.stat().st_mtime_ns for path in fixture.rglob("*") if path.is_file()}
+        env = dict(self.env)
+        env.update({
+            "EU_AUDIT_ROOT": str(fixture.resolve()),
+            "EU_AUDIT_NO_REPORT": "yes",
+            "CONFIRM": "yes",  # must be ignored; the audit never mutates
+        })
+        audit = subprocess.run(
+            ["/bin/bash", str(self.prefix / "scripts/hardening-audit.sh")],
+            cwd=str(self.prefix),
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=20,
+        )
+        self.assertEqual(audit.returncode, 0, audit.stderr + audit.stdout)
+        self.assertIn("PASS", audit.stdout)
+        self.assertIn("FAIL=0", audit.stdout)
+        self.assertFalse(
+            any(line.startswith("FAIL") for line in audit.stdout.splitlines()),
+            audit.stdout,
+        )
+        self.assertEqual(
+            {path: path.stat().st_mtime_ns for path in fixture.rglob("*") if path.is_file()},
+            before,
+        )
+        # No report files should be created when EU_AUDIT_NO_REPORT=yes
+        self.assertEqual(list((self.prefix / "reports").glob("*hardening*")), [])
+
     def test_help_exits_zero(self):
         result = subprocess.run(["/bin/bash", str(INSTALL), "--help"], cwd=str(ROOT),
                                 text=True, capture_output=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Dry-run", result.stdout)
+        self.assertIn("hardening-audit.sh", result.stdout)
 
 
 if __name__ == "__main__":

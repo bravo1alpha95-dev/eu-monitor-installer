@@ -44,7 +44,7 @@ Copy `ansible/inventory/hosts.example.yml` to `ansible/inventory/hosts.yml` and 
 
 | Item | Default destination | Notes |
 |---|---|---|
-| Community scripts, tests, docs, ROE template | `/opt/eu-ec-detect` | Prefix is configurable |
+| Community scripts, tests, docs, ROE template | `/opt/eu-ec-detect` | Includes the read-only `hardening-audit.sh` |
 | `reports/` | `$prefix/reports` | Mode 0700 |
 | Example systemd timer/service | `$prefix/systemd` | Copied only; **not** enabled |
 | Wazuh rules (if requested) | `/var/ossec/etc/rules` | Optional decoder is copied only if that directory already exists |
@@ -74,7 +74,13 @@ cp -n .env.example .env && chmod 600 .env
 # Set EU_SCOPE_CIDR to the authorized range you own (10.0.0.0/24 in the example is a placeholder)
 # Fill scope/inventory.md and scope/roe.md
 ./scripts/easy-run.sh
+# Optional, still read-only: CIS-style hardening audit (ignores CONFIRM, never mutates)
+sudo ./scripts/hardening-audit.sh
+# EU_AUDIT_NO_REPORT=yes ./scripts/hardening-audit.sh   # print only
+# EU_AUDIT_FAIL_ON=fail ./scripts/hardening-audit.sh    # exit 2 if any FAIL
 ```
+
+`scripts/hardening-audit.sh` checks a subset of common CIS-benchmark-style items (SSH, sudoers, firewall, world-writable paths, automatic updates, auditd, and password aging) and prints one `PASS`, `WARN`, or `FAIL` line per finding. It has no apply mode. Run it as root for complete results; anything it cannot read is reported as `WARN`. Reports go under `$prefix/reports/` (directory 0700, files 0600, redacted) unless `EU_AUDIT_NO_REPORT=yes`. This is a subset of CIS items, not a full benchmark or a compliance attestation. See the vendored community `README.md` for the finding table and `EU_AUDIT_ROOT` fixture mode.
 
 Review systemd units in `$prefix/systemd` before you install or enable them yourself.
 
@@ -86,6 +92,10 @@ shellcheck -x install.sh
 ansible-playbook site.yml --syntax-check
 ansible-lint site.yml roles/eu_monitor
 python3 tests/test_install.py
+# Vendored community checks (run from vendor/eu-ec-detect-community/):
+shellcheck -x scripts/*.sh
+python3 tests/test_regressions.py
+python3 tests/test_hardening_audit.py
 ```
 
 ## License
