@@ -1,17 +1,17 @@
 # Source snapshots vendored into eu-monitor-installer.
-# Community tree refreshed 2026-11-15 from main to include the
-# read-only hardening audit (and its fixture tests). The companion
+# Community tree refreshed 2026-11-17 from main (includes the
+# hashed lab-leak check fix from community PR #8). The companion
 # repository's GitHub Actions workflow and dependabot config are
 # not vendored; this installer's CI lives in .github/workflows/.
 # The Wazuh pack snapshot is unchanged from 2026-11-14.
 
 community_tree=eu-ec-detect-community
 community_origin=https://github.com/bravo1alpha95-dev/eu-ec-detect-community
-community_commit=8986d57dddf8f3c1a2a9e48a29aa52ce724b48de
+community_commit=70b537b24a286f1870ad1e79e8ad9c26eff4483a
 community_branch=main
 wazuh_tree=eu-wazuh-detections
 wazuh_origin=https://github.com/bravo1alpha95-dev/eu-wazuh-detections
 wazuh_commit=be703d1c634234c521fd0f89b974b23bdce2f949
 wazuh_branch=main
-snapshotted_at=2026-11-15
+snapshotted_at=2026-11-17
 # The 10.0.0.0/24 addresses in vendored examples are placeholders.
