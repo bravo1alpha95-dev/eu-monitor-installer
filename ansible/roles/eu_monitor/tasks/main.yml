@@ -23,13 +23,29 @@
   become: false
   changed_when: false
 
+- name: Check whether the install prefix already exists
+  ansible.builtin.stat:
+    path: "{{ eu_monitor_prefix }}"
+  register: eu_monitor_prefix_stat
+
+# Mode 0750 is only applied to a prefix this run creates. An existing
+# directory such as /opt keeps its mode so other users are not locked out.
 - name: Create the install prefix
+  when: not eu_monitor_prefix_stat.stat.exists
   ansible.builtin.file:
     path: "{{ eu_monitor_prefix }}"
     state: directory
     owner: "{{ eu_monitor_owner }}"
     group: "{{ eu_monitor_group }}"
     mode: "0750"
+
+- name: Ensure an existing install prefix is a real directory
+  when: eu_monitor_prefix_stat.stat.exists
+  ansible.builtin.assert:
+    that:
+      - eu_monitor_prefix_stat.stat.isdir | default(false)
+      - not (eu_monitor_prefix_stat.stat.islnk | default(false))
+    fail_msg: "{{ eu_monitor_prefix }} must be a real directory"
 
 - name: Create the reports directory
   ansible.builtin.file:
@@ -126,7 +142,15 @@
 - name: Copy Wazuh custom rules when requested
   when: eu_monitor_with_wazuh_rules | bool
   block:
-    - name: Ensure the Wazuh rules directory exists
+    - name: Check whether the Wazuh rules directory already exists
+      ansible.builtin.stat:
+        path: "{{ eu_monitor_wazuh_rules_dir }}"
+      register: eu_monitor_rules_dir_stat
+
+    # Same rule as the install prefix: only a directory we create gets 0750.
+    # /var/ossec/etc/rules already exists on a manager and must keep its mode.
+    - name: Create the Wazuh rules directory
+      when: not eu_monitor_rules_dir_stat.stat.exists
       ansible.builtin.file:
         path: "{{ eu_monitor_wazuh_rules_dir }}"
         state: directory
