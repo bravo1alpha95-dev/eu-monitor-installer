@@ -149,8 +149,12 @@ if [[ -L "$PREFIX" || ( -e "$PREFIX" && ! -d "$PREFIX" ) ]]; then
   echo "[install] ERROR: $PREFIX must be a real directory" >&2
   exit 1
 fi
-mkdir -p "$PREFIX"
-chmod 750 "$PREFIX"
+# Only a prefix this run creates gets mode 0750 (as the plan says); an existing
+# directory such as /opt keeps its mode so other users are not locked out.
+if [[ ! -d "$PREFIX" ]]; then
+  mkdir -p "$PREFIX"
+  chmod 750 "$PREFIX"
+fi
 
 copy_tree "$SRC_SCRIPTS" "$PREFIX"
 

@@ -123,6 +123,20 @@ class Installer(unittest.TestCase):
         # No report files should be created when EU_AUDIT_NO_REPORT=yes
         self.assertEqual(list((self.prefix / "reports").glob("*hardening*")), [])
 
+    def test_existing_prefix_mode_is_preserved(self):
+        self.roe.write_text(AUTHORIZED_ROE)
+        self.prefix.mkdir(mode=0o755)
+        os.chmod(self.prefix, 0o755)
+        result = self.run_install(confirm=True)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertEqual(stat.S_IMODE(self.prefix.stat().st_mode), 0o755)
+
+    def test_new_prefix_is_created_0750(self):
+        self.roe.write_text(AUTHORIZED_ROE)
+        result = self.run_install(confirm=True)
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertEqual(stat.S_IMODE(self.prefix.stat().st_mode), 0o750)
+
     def test_help_exits_zero(self):
         result = subprocess.run(["/bin/bash", str(INSTALL), "--help"], cwd=str(ROOT),
                                 text=True, capture_output=True, timeout=10)
