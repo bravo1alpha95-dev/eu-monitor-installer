@@ -152,6 +152,25 @@ class Installer(unittest.TestCase):
         self.assertIn("Dry-run", result.stdout)
         self.assertIn("hardening-audit.sh", result.stdout)
 
+    def test_ansible_applies_0750_only_when_creating_prefix(self):
+        text = (ROOT / "ansible/roles/eu_monitor/tasks/main.yml").read_text()
+        self.assertIn("eu_monitor_prefix_stat", text)
+        self.assertIn("when: not eu_monitor_prefix_stat.stat.exists", text)
+        self.assertIn('mode: "0750"', text)
+        # The prefix create task, not a later unconditional chmod, is gated.
+        create = text.split("- name: Create the install prefix", 1)[1]
+        create = create.split("- name: Ensure an existing install prefix", 1)[0]
+        self.assertIn('mode: "0750"', create)
+        self.assertIn("when: not eu_monitor_prefix_stat.stat.exists", create)
+        self.assertIn("eu_monitor_rules_dir_stat", text)
+        self.assertIn("when: not eu_monitor_rules_dir_stat.stat.exists", text)
+
+    def test_vendored_fim_test_ignores_stale_alerts(self):
+        text = (ROOT / "vendor/eu-wazuh-detections/lab/fim-test.sh").read_text()
+        self.assertIn("ALERTS_START", text)
+        self.assertIn("def new_alerts", text)
+        self.assertIn("if os.path.getsize(path) < start:", text)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
