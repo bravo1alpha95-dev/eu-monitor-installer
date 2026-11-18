@@ -1,15 +1,15 @@
 # Source snapshots vendored into eu-monitor-installer.
-# Community tree refreshed 2026-11-18 from community branch
-# fix/lab-isolation-roe-2026-11-18 (CIDR scope check, EU_FAIL_CLOSED,
-# portable timestamps); re-point to the main merge commit once merged. The companion
+# Community tree refreshed 2026-11-18 from eu-ec-detect-community main
+# merge commit of PR #9 (CIDR scope check, EU_FAIL_CLOSED, portable
+# timestamps). The companion
 # repository's GitHub Actions workflow and dependabot config are
 # not vendored; this installer's CI lives in .github/workflows/.
 # The Wazuh pack snapshot is unchanged from 2026-11-14.
 
 community_tree=eu-ec-detect-community
 community_origin=https://github.com/bravo1alpha95-dev/eu-ec-detect-community
-community_commit=dd10e1bfac955f2a62371203a22eb8f21232a357
-community_branch=fix/lab-isolation-roe-2026-11-18
+community_commit=b1df2ab7d00adb944c3d3e820952138c7103cf10
+community_branch=main
 wazuh_tree=eu-wazuh-detections
 wazuh_origin=https://github.com/bravo1alpha95-dev/eu-wazuh-detections
 wazuh_commit=be703d1c634234c521fd0f89b974b23bdce2f949
