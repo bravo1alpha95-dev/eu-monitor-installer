@@ -122,6 +122,8 @@ if [[ $DRY_RUN -eq 1 ]]; then
 fi
 
 # --- apply ---
+# Copies below drop the checkout owner: when run as root, installed scripts and
+# Wazuh rules must not stay writable by whoever cloned this repository.
 copy_tree() {
   local src=$1 dest=$2
   if [[ -L "$dest" ]]; then
@@ -148,7 +150,7 @@ copy_tree() {
       return 1
     fi
     mkdir -p "$(dirname "$dest/$rel")"
-    cp -a "$path" "$dest/$rel"
+    cp -a --no-preserve=ownership "$path" "$dest/$rel"
   done < <(find "$src" -mindepth 1 -print0)
 }
 
@@ -174,7 +176,7 @@ chmod 755 "$PREFIX/scripts/lib.sh"
 
 if [[ -d "$ROOT/systemd" ]]; then
   mkdir -p "$PREFIX/systemd"
-  cp -a "$ROOT/systemd/." "$PREFIX/systemd/"
+  cp -a --no-preserve=ownership "$ROOT/systemd/." "$PREFIX/systemd/"
 fi
 
 prepare_reports_dir "$PREFIX/reports"
@@ -185,13 +187,13 @@ if [[ $WITH_WAZUH -eq 1 ]]; then
     exit 1
   fi
   mkdir -p "$WAZUH_RULES_DIR"
-  cp -a "$SRC_RULES/rules/eu_ec_detect_rules.xml" "$WAZUH_RULES_DIR/eu_ec_detect_rules.xml"
+  cp -a --no-preserve=ownership "$SRC_RULES/rules/eu_ec_detect_rules.xml" "$WAZUH_RULES_DIR/eu_ec_detect_rules.xml"
   # Decoders go next to rules only when a decoders directory already exists
   # (typical Wazuh layout: /var/ossec/etc/decoders). Never invent a sibling
   # under a test prefix unless asked.
   decoder_dest="$(dirname "$WAZUH_RULES_DIR")/decoders"
   if [[ -d "$decoder_dest" && ! -L "$decoder_dest" ]]; then
-    cp -a "$SRC_RULES/decoders/eu_ec_detect_decoders.xml" "$decoder_dest/eu_ec_detect_decoders.xml"
+    cp -a --no-preserve=ownership "$SRC_RULES/decoders/eu_ec_detect_decoders.xml" "$decoder_dest/eu_ec_detect_decoders.xml"
     echo "[install] Wrote $decoder_dest/eu_ec_detect_decoders.xml"
   else
     echo "[install] INFO: no decoders directory at $decoder_dest; skipped optional decoder copy."
