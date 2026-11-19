@@ -1,18 +1,18 @@
 # Source snapshots vendored into eu-monitor-installer.
-# Community tree refreshed 2026-11-18 from eu-ec-detect-community main
-# merge commit of PR #9 (CIDR scope check, EU_FAIL_CLOSED, portable
-# timestamps). The companion
+# Community tree refreshed 2026-11-19 from eu-ec-detect-community main
+# merge commit of PR #10 (example scope uses RFC 5737 192.0.2.0/24,
+# not private 10.0.0.0/24). The companion
 # repository's GitHub Actions workflow and dependabot config are
 # not vendored; this installer's CI lives in .github/workflows/.
 # The Wazuh pack snapshot is unchanged from 2026-11-14.
 
 community_tree=eu-ec-detect-community
 community_origin=https://github.com/bravo1alpha95-dev/eu-ec-detect-community
-community_commit=b1df2ab7d00adb944c3d3e820952138c7103cf10
+community_commit=7a181fc055bda3c6f46648bcfd2006a334cd2873
 community_branch=main
 wazuh_tree=eu-wazuh-detections
 wazuh_origin=https://github.com/bravo1alpha95-dev/eu-wazuh-detections
 wazuh_commit=be703d1c634234c521fd0f89b974b23bdce2f949
 wazuh_branch=main
-snapshotted_at=2026-11-17
-# The 10.0.0.0/24 addresses in vendored examples are placeholders.
+snapshotted_at=2026-11-19
+# The 192.0.2.0/24 addresses in vendored examples are RFC 5737 placeholders.

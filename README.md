@@ -71,7 +71,7 @@ Reports are written to a named volume. `CONFIRM` is never set in the Compose fil
 ```bash
 cd /opt/eu-ec-detect
 cp -n .env.example .env && chmod 600 .env
-# Set EU_SCOPE_CIDR to the authorized range you own (10.0.0.0/24 in the example is a placeholder)
+# Set EU_SCOPE_CIDR to the authorized range you own (192.0.2.0/24 in the example is a placeholder)
 # Fill scope/inventory.md and scope/roe.md
 ./scripts/easy-run.sh
 # Optional, still read-only: CIS-style hardening audit (ignores CONFIRM, never mutates)
