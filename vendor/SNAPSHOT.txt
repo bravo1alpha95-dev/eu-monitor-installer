@@ -4,7 +4,8 @@
 # not private 10.0.0.0/24). The companion
 # repository's GitHub Actions workflow and dependabot config are
 # not vendored; this installer's CI lives in .github/workflows/.
-# The Wazuh pack snapshot is unchanged from 2026-11-14.
+# Wazuh tree refreshed 2026-11-22 from eu-wazuh-detections main (merge of
+# PR #9): full tree except .github/workflows and dependabot config.
 
 community_tree=eu-ec-detect-community
 community_origin=https://github.com/bravo1alpha95-dev/eu-ec-detect-community
@@ -12,7 +13,7 @@ community_commit=7a181fc055bda3c6f46648bcfd2006a334cd2873
 community_branch=main
 wazuh_tree=eu-wazuh-detections
 wazuh_origin=https://github.com/bravo1alpha95-dev/eu-wazuh-detections
-wazuh_commit=be703d1c634234c521fd0f89b974b23bdce2f949
+wazuh_commit=8a9433635421e9cf693ed11108a0b4495c52fc26
 wazuh_branch=main
-snapshotted_at=2026-11-19
+snapshotted_at=2026-11-22
 # The 192.0.2.0/24 addresses in vendored examples are RFC 5737 placeholders.

@@ -51,7 +51,7 @@ Copy `ansible/inventory/hosts.example.yml` to `ansible/inventory/hosts.yml` and 
 
 Existing `scope/roe.md` and `scope/inventory.md` at the destination are not overwritten (idempotent with operator data).
 
-The vendored Wazuh rules were verified with `wazuh-logtest` against `wazuh/wazuh-manager:4.14.10` in the companion [eu-wazuh-detections](https://github.com/bravo1alpha95-dev/eu-wazuh-detections) repository (see that repo's `docs/LOGTEST.md`). File-integrity rules 100020 and 100021 loaded but were not fired through logtest. Re-validate on your manager before any reload.
+The vendored Wazuh rules pass `wazuh-logtest` on `wazuh/wazuh-manager` 4.8.2 through 4.14.10 in the companion [eu-wazuh-detections](https://github.com/bravo1alpha95-dev/eu-wazuh-detections) repository's CI (see [vendor/eu-wazuh-detections/docs/VERSION-MATRIX.md](vendor/eu-wazuh-detections/docs/VERSION-MATRIX.md)). File-integrity rules 100020 and 100021 cannot fire through logtest; they were verified on a live 4.14.10 lab only. Re-validate on your manager before any reload.
 
 ## Docker
 

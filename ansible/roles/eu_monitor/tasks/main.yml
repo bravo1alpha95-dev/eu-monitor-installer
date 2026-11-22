@@ -180,4 +180,4 @@
       - "Installed (or would install) the community toolkit at {{ eu_monitor_prefix }}."
       - "Wazuh packages, manager restarts, and systemd timers were not changed."
       - "After install, scripts/hardening-audit.sh is a read-only CIS-style audit; it ignores CONFIRM and never mutates the host."
-      - "Validate Wazuh rules with wazuh-logtest before any manager reload; they were tested on Wazuh 4.14.10 only."
+      - "Validate Wazuh rules with wazuh-logtest before any manager reload; they pass wazuh-logtest on Wazuh 4.8.2-4.14.10 (FIM rules: live 4.14.10 lab only)."
